@@ -139,7 +139,7 @@ public class CrailBenchmark {
         return executionTime;
     }
 
-    void writeAll(String filename, int storageClass, int locationClass, boolean buffered, boolean skipDir) throws
+    void testLocalDataWrite(String filename, int storageClass, int locationClass, boolean buffered, boolean skipDir) throws
             Exception {
         // write 1M once time, loop n times
         int loopTimes = 3;// exec 3 times, use the avg
@@ -163,7 +163,7 @@ public class CrailBenchmark {
                         false);
                 fStream.write((execTime[j] + "\t\t").getBytes());
                 sumTime += execTime[j];
-                TimeList += execTime[j] + ',';
+                TimeList += execTime[j] + ", ";
                 Thread.sleep(5000);
             }
             double avgExecTime = sumTime / loopTimes;
@@ -192,7 +192,7 @@ public class CrailBenchmark {
                         false);
                 fStream.write((execTime[j] + "\t\t").getBytes());
                 sumTime += execTime[j];
-                TimeList += execTime[j] + ',';
+                TimeList += execTime[j] + ", ";
                 Thread.sleep(5000);
             }
             double avgExecTime = sumTime / loopTimes;
@@ -220,7 +220,7 @@ public class CrailBenchmark {
                         false);
                 fStream.write((execTime[j] + "\t\t").getBytes());
                 sumTime += execTime[j];
-                TimeList += execTime[j] + ',';
+                TimeList += execTime[j] + ", ";
                 Thread.sleep(5000);
             }
             double avgExecTime = sumTime / loopTimes;
@@ -228,6 +228,101 @@ public class CrailBenchmark {
 
             fStream.write((avgExecTime + "\t\t" + throughput + "\n").getBytes());
             System.out.println("write " + filename + "[" + loop + "G], execTime \t" + TimeList + ", avg " +
+                    "execTime \t" + avgExecTime + ", avg throughput \t" + throughput);
+        }
+        fStream.close();
+
+        System.out.println("benchmark end");
+    }
+
+    void testNetTransfer(String filename, boolean buffered, boolean skipDir) throws Exception{
+        // write 1M once time, loop n times
+        int loopTimes = 3;// exec 3 times, use the avg
+        int size = 1024 * 1024;
+        System.out.println("starting benchmark...");
+        // DecimalFormat df = new DecimalFormat("#.00");
+        // FileOutputStream allData = new FileOutputStream(new File("Crail-IOTest.alldata"));
+
+        // 1-10M
+        System.out.println("test 1M...10M");
+        FileOutputStream fStream = new FileOutputStream(new File("A-B-Crail-IOTest-1.txt"));
+        for (int loop = 1; loop < 10; loop++) {
+            double[] execTime = new double[loopTimes];
+            double sumTime = 0.0;
+            String TimeList = "";
+
+            fStream.write((loop + "\t\t").getBytes());
+
+            for (int j = 0; j < loopTimes; j++) {
+                execTime[j] = write(filename + loop, size*loop, 1,0, 0, buffered, skipDir,
+                        false);
+                fStream.write((execTime[j] + "\t\t").getBytes());
+                sumTime += execTime[j];
+                TimeList += execTime[j] + ", ";
+                Thread.sleep(5000);
+            }
+            double avgExecTime = sumTime / loopTimes;
+            double throughput = loop / avgExecTime;
+            fStream.write((avgExecTime + "\t\t" + throughput + "\n").getBytes());
+
+            System.out.println("write " + filename + "[" + loop + "M], execTime \t" + TimeList + " avg " +
+                    "execTime \t" + avgExecTime + ", avg throughput \t" + throughput);
+        }
+        fStream.close();
+
+        Thread.sleep(5000);
+
+        // 10-1000M
+        System.out.println("test 10M...1000M");
+        fStream = new FileOutputStream(new File("A-B-Crail-IOTest-2.txt"));
+        for (int loop = 10; loop <= 1000; loop += 10) {
+            double[] execTime = new double[loopTimes];
+            double sumTime = 0.0;
+            String TimeList = "";
+
+            fStream.write((loop + "\t\t").getBytes());
+
+            for (int j = 0; j < loopTimes; j++) {
+                execTime[j] = write(filename + loop, size*loop, 1, 0, 0, buffered, skipDir,
+                        false);
+                fStream.write((execTime[j] + "\t\t").getBytes());
+                sumTime += execTime[j];
+                TimeList += execTime[j] + ", ";
+                Thread.sleep(5000);
+            }
+            double avgExecTime = sumTime / loopTimes;
+            double throughput = loop / avgExecTime;
+            fStream.write((avgExecTime + "\t\t" + throughput + "\n").getBytes());
+            System.out.println("write " + filename + "[" + loop + "M], execTime \t" + TimeList + " avg " +
+                    "execTime \t" + avgExecTime + ", avg throughput \t" + throughput);
+        }
+        fStream.close();
+
+        Thread.sleep(5000);
+
+        // 1G - 10G
+        System.out.println("test 1G...10G");
+        fStream = new FileOutputStream(new File("A-B-Crail-IOTest-3.txt"));
+        for (int loop = 1; loop <= 10; loop++) {
+            double[] execTime = new double[loopTimes];
+            double sumTime = 0.0;
+            String TimeList = "";
+
+            fStream.write((loop * 1024 + "\t\t").getBytes());
+
+            for (int j = 0; j < loopTimes; j++) {
+                execTime[j] = write(filename + loop, size*loop * 1024, 1, 0, 0, buffered, skipDir,
+                        false);
+                fStream.write((execTime[j] + "\t\t").getBytes());
+                sumTime += execTime[j];
+                TimeList += execTime[j] + ", ";
+                Thread.sleep(5000);
+            }
+            double avgExecTime = sumTime / loopTimes;
+            double throughput = loop * 1024 / avgExecTime;
+
+            fStream.write((avgExecTime + "\t\t" + throughput + "\n").getBytes());
+            System.out.println("write " + filename + "[" + loop + "G], execTime \t" + TimeList + " avg " +
                     "execTime \t" + avgExecTime + ", avg throughput \t" + throughput);
         }
         fStream.close();
@@ -1097,7 +1192,7 @@ public class CrailBenchmark {
 
         String benchmarkTypes = "write|writeAsync|readSequential|readRandom|readSequentialAsync|readMultiStream|"
                 + "createFile|createFileAsync|createMultiFile|getKey|getFile|getFileAsync|enumerateDir|browseDir|"
-                + "writeInt|readInt|seekInt|readMultiStreamInt|printLocationclass";
+                + "writeInt|readInt|seekInt|readMultiStreamInt|printLocationclass|testLocalDataWrite|testNetTransfer";
         Option typeOption = Option.builder("t").desc("type of experiment [" + benchmarkTypes + "]").hasArg().build();
         Option fileOption = Option.builder("f").desc("filename").hasArg().build();
         Option sizeOption = Option.builder("s").desc("buffer size [bytes]").hasArg().build();
@@ -1168,6 +1263,10 @@ public class CrailBenchmark {
         if (type.equals("write")) {
             benchmark.open();
             benchmark.write(filename, size, loop, storageClass, locationClass, useBuffered, skipDir, printInfo);
+            benchmark.close();
+        } else if (type.equalsIgnoreCase("testNetTransfer")) {
+            benchmark.open();
+            benchmark.testNetTransfer(filename, useBuffered, skipDir);
             benchmark.close();
         } else if (type.equalsIgnoreCase("writeAsync")) {
             benchmark.open();
@@ -1271,9 +1370,9 @@ public class CrailBenchmark {
             }
         } else if (type.equalsIgnoreCase("locationMap")) {
             benchmark.locationMap();
-        } else if (type.equalsIgnoreCase("writeAll")) {
+        } else if (type.equalsIgnoreCase("testLocalDataWrite")) {
             benchmark.open();
-            benchmark.writeAll(filename, storageClass, locationClass, useBuffered, skipDir);
+            benchmark.testLocalDataWrite(filename, storageClass, locationClass, useBuffered, skipDir);
             benchmark.close();
         } else {
             HelpFormatter formatter = new HelpFormatter();
