@@ -20,7 +20,7 @@ set -e
 usage="Usage: start-crail.sh"
 
 bin=`dirname "${BASH_SOURCE-$0}"`
-CRAIL_HOME=`cd "$bin/.."; pwd`
+export CRAIL_HOME=`cd "$bin/.."; pwd`
 bin=`cd "$bin/../bin"; pwd`
 
 LIBEXEC_DIR="$bin"/../libexec

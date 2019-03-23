@@ -16,7 +16,7 @@
 # limitations under the License.
 
 bin=`dirname "${BASH_SOURCE-$0}"`
-CRAIL_HOME=`cd "$bin/.."; pwd`
+export CRAIL_HOME=`cd "$bin/.."; pwd`
 bin=`cd "$bin"; pwd`
 
 LIBEXEC_DIR="$bin"/../libexec
