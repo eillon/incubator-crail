@@ -243,6 +243,9 @@ public class CrailUtils {
 	}
 	
 	public static CrailLocationClass getLocationClass() throws UnknownHostException{
+		String source = InetAddress.getLocalHost().getCanonicalHostName();
+		CrailLocationClass target = CrailLocationClass.get(source.hashCode());
+		LOG.debug("CrailUtils: getLocationClass: source is {}, CrailLocationClass is {}",source, target);
 		return CrailLocationClass.get(InetAddress.getLocalHost().getCanonicalHostName().hashCode());
 	}
 	
@@ -273,5 +276,41 @@ public class CrailUtils {
 		}
 		return address;
 	}
+
+	/**
+	 * 计算存储耗时。适用于DRAM和NVM
+	 * @param M 硬件的最大传输速率，暂时由配置文件指定
+	 * @param w 影响因子，只与硬件有关。由配置文件指定
+	 * @param size 文件大小
+	 * @return
+	 */
+	public static double getStorageConsumption(double M, double w, double size){
+		double criticalValue = M*M/(2*w);
+		if (size <= criticalValue){
+			return Math.sqrt(2*size/w);
+		}else {
+			return size/M + M/(2*w);
+		}
+	}
+
+	/**
+	 * 计算网络传输耗时，适用于Tcp
+	 * @param H 带宽，暂时由配置文件指定
+	 * @param d namenode和datanode间的延迟，由配置文件指定 -- 这个必须改
+	 * @param writeTimes 写入次数,当操作是
+	 * @param size
+	 * @param isSync
+	 * @return
+	 */
+	public static double getTcpNetConsumption(double H, double d, int writeTimes, double size, boolean isSync){
+		return size/(1024*H/8) + size/CrailConstants.BLOCK_SIZE*d;
+	}
+
+	//
+	public static double getRdmaNetConsumption(){
+		LOG.warn("un achieved function");
+		return 0;
+	}
+
 
 }

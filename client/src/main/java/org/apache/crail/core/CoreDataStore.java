@@ -374,9 +374,7 @@ public class CoreDataStore extends CrailStore {
 	}
 
 	public CrailBlockLocation[] getBlockLocations(String path, long start, long len) throws Exception {
-		if (CrailConstants.DEBUG){
-			LOG.info("location: path " + path + ", start " + start + ", len " + len);
-		}
+		LOG.debug("CoreDataStore getBlockLocations: path " + path + ", start " + start + ", len " + len);
 
 		if (path == null) {
 			LOG.info("Path null");
