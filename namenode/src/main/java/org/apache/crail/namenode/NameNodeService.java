@@ -113,10 +113,12 @@ public class NameNodeService implements RpcNameNodeService, Sequencer {
         if (storageClass < 0) {
             storageClass = parentInfo.getStorageClass();
         }
-        if (locationClass < 0) {
+        /*
+		if (locationClass < 0) {
             // locationClass 可不可以小于0？ locationClass好像是一个hash值，可以小于0
             locationClass = parentInfo.getLocationClass();
         }
+		*/
 
         AbstractNode fileInfo = fileTree.createNode(fileHash.getFileComponent(), type, storageClass, locationClass, enumerable);
         LOG.debug("NameNodeService: createFile: create fileInfo in fileTree, {}", fileInfo);
