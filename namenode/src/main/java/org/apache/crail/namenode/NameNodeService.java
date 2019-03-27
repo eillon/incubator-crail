@@ -424,6 +424,7 @@ public class NameNodeService implements RpcNameNodeService, Sequencer {
         dnInfoNn.touch();
         response.setServiceId(serviceId);
         response.setFreeBlockCount(dnInfoNn.getBlockCount());
+        response.setBasicInfo(dnInfoNn.getM(), dnInfoNn.getW(), dnInfoNn.getH(), dnInfoNn.getD());
 
         return RpcErrors.ERR_OK;
     }

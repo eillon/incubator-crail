@@ -21,46 +21,108 @@ package org.apache.crail.metadata;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
+/*
+	DataNodeStatistics不仅应该有freeblocks，还应该有M、w、H、d
+ */
 public class DataNodeStatistics {
-	public static final int CSIZE = 12;
-	
-	private long serviceId;
-	private int freeBlockCount;
-	
-	public DataNodeStatistics(){
-		this.serviceId = 0;
-		this.freeBlockCount = 0;
-	}
-	
-	public int write(ByteBuffer buffer){
-		buffer.putLong(serviceId);
-		buffer.putInt(freeBlockCount);
-		return CSIZE;
-	}
-	
-	public void update(ByteBuffer buffer) throws UnknownHostException {
-		this.serviceId = buffer.getLong();
-		this.freeBlockCount = buffer.getInt();
-	}
+    public static final int CSIZE = 44;
 
-	public int getFreeBlockCount() {
-		return freeBlockCount;
-	}
+    private long serviceId;
+    private int freeBlockCount;
+    private double M;
+    private double w;
+    private double H;
+    private double d;
 
-	public void setFreeBlockCount(int blockCount) {
-		this.freeBlockCount = blockCount;
-	}
+    public DataNodeStatistics() {
+        this.serviceId = 0;
+        this.freeBlockCount = 0;
+        this.M = 0;
+        this.H = 0;
+        this.w = 0;
+        this.d = 0;
+    }
 
-	public void setStatistics(DataNodeStatistics statistics) {
-		this.serviceId = statistics.getServiceId();
-		this.freeBlockCount = statistics.getFreeBlockCount();
-	}
+    public int write(ByteBuffer buffer) {
+        buffer.putLong(serviceId);
+        buffer.putInt(freeBlockCount);
+        buffer.putDouble(M);
+        buffer.putDouble(w);
+        buffer.putDouble(H);
+        buffer.putDouble(d);
+        return CSIZE;
+    }
 
-	public void setServiceId(long serviceId) {
-		this.serviceId = serviceId;
-	}	
-	
-	public long getServiceId(){
-		return serviceId;
-	}
+    public void update(ByteBuffer buffer) throws UnknownHostException {
+        this.serviceId = buffer.getLong();
+        this.freeBlockCount = buffer.getInt();
+        this.M = buffer.getDouble();
+        this.w = buffer.getDouble();
+        this.H = buffer.getDouble();
+        this.d = buffer.getDouble();
+    }
+
+    public int getFreeBlockCount() {
+        return freeBlockCount;
+    }
+
+    public void setFreeBlockCount(int blockCount) {
+        this.freeBlockCount = blockCount;
+    }
+
+    public void setStatistics(DataNodeStatistics statistics) {
+        this.serviceId = statistics.getServiceId();
+        this.freeBlockCount = statistics.getFreeBlockCount();
+        this.M = statistics.getM();
+        this.w = statistics.getW();
+        this.H = statistics.getH();
+        this.d = statistics.getD();
+    }
+
+    public void setServiceId(long serviceId) {
+        this.serviceId = serviceId;
+    }
+
+    public long getServiceId() {
+        return serviceId;
+    }
+
+
+    public double getM() {
+        return M;
+    }
+
+    public void setM(double m) {
+        M = m;
+    }
+
+    public double getW() {
+        return w;
+    }
+
+    public void setW(double w) {
+        this.w = w;
+    }
+
+    public double getH() {
+        return H;
+    }
+
+    public void setH(double h) {
+        H = h;
+    }
+
+    public double getD() {
+        return d;
+    }
+
+    public void setD(double d) {
+        this.d = d;
+    }
+
+    @Override
+    public String toString() {
+        return "DataNodeStatistics [serviceId=" + serviceId + ", freeBlockCount="
+                + freeBlockCount + ", M=" + M + ", w=" + w + ", H=" + H + ", d=" + d + "]";
+    }
 }

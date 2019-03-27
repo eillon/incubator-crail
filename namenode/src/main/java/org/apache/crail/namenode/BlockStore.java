@@ -32,7 +32,12 @@ import org.apache.crail.utils.AtomicIntegerModulo;
 import org.apache.crail.utils.CrailUtils;
 import org.slf4j.Logger;
 
-// 我需要搞清这里面 BlockStore、StorageClass、DataNodeArray、DataNodeBlocks的关系
+/**
+ * BlockStore 负责整体的块管理；里面分层存储着storageClass；
+ * StorageClass: 管理这一层内块的分配
+ * DataNodeArray：多个DataNodeBlocks的ArrayList集合。这里的多个DataNodeBlocks可以是同一层的，也可以是同层同主机的
+ * DataNodeBlocks：一个storageTiers（dataNode）上所有的块，是一个队列。
+ */
 public class BlockStore {
     private static final Logger LOG = CrailUtils.getLogger();
 
@@ -61,7 +66,7 @@ public class BlockStore {
         return storageClasses[storageClass].updateRegion(region);
     }
 
-    // 现在，所有的getBlock调用都是基于PARENT的   -- 严重怀疑，locationClass的值传不到这里：不能为负
+    // -- 严重怀疑，locationClass的值传不到这里：不能为负
     public NameNodeBlockInfo getBlock(int storageClass, int locationAffinity) throws InterruptedException {
         NameNodeBlockInfo block = null;
         if (storageClass > 0) {
@@ -181,7 +186,8 @@ class StorageClass {
     //---------------
 
     private void _addDataNode(DataNodeBlocks dataNode) {
-        LOG.info("adding datanode " + CrailUtils.getIPAddressFromBytes(dataNode.getIpAddress()) + ":" + dataNode.getPort() + " of type " + dataNode.getStorageType() + " to storage class " + storageClass + "dataNode locationClass is {}", dataNode.getLocationClass());
+        LOG.info("adding datanode {}:{} of type {} to storage class {}; \n\t datanode info : {}", CrailUtils.getIPAddressFromBytes(dataNode.getIpAddress()),
+                dataNode.getPort(), dataNode.getStorageType(), storageClass, dataNode);
         DataNodeArray hostMap = affinitySets.get(dataNode.getLocationClass());
         if (hostMap == null) {
             hostMap = new DataNodeArray(blockSelection);
@@ -261,8 +267,10 @@ class StorageClass {
             try {
                 NameNodeBlockInfo block = null;
                 int size = arrayList.size();
+                LOG.debug("BlockStore: StorageClass: DataNodeArray: get: DataNodeArray's size is {}", size);
                 if (size > 0) {
-                    // 这里决定了同层内，块怎么选?  -- 但是这里没有用到locationAffinity
+                    // 这里决定了同一个DataNodeArray内怎么分配。DataNodeArray可以是一整个storageClass层，也可以是指定locationAffinity的、同层同主机DataNodeArray
+                    // 同层同主机可以有多个storageTier  但一般是一个
                     int startIndex = blockSelection.getNext(size);
                     for (int i = 0; i < size; i++) {
                         int index = (startIndex + i) % size;

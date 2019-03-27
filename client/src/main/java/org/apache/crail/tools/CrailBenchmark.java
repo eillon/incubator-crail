@@ -235,7 +235,7 @@ public class CrailBenchmark {
         System.out.println("benchmark end");
     }
 
-    void testNetTransfer(String filename, boolean buffered, boolean skipDir) throws Exception{
+    void testNetTransfer(String filename, boolean buffered, boolean skipDir) throws Exception {
         // write 1M once time, loop n times
         int loopTimes = 3;// exec 3 times, use the avg
         int size = 1024 * 1024;
@@ -254,7 +254,7 @@ public class CrailBenchmark {
             fStream.write((loop + "\t\t").getBytes());
 
             for (int j = 0; j < loopTimes; j++) {
-                execTime[j] = write(filename + loop, size*loop, 1,0, 0, buffered, skipDir,
+                execTime[j] = write(filename + loop, size * loop, 1, 0, 0, buffered, skipDir,
                         false);
                 fStream.write((execTime[j] + "\t\t").getBytes());
                 sumTime += execTime[j];
@@ -283,7 +283,7 @@ public class CrailBenchmark {
             fStream.write((loop + "\t\t").getBytes());
 
             for (int j = 0; j < loopTimes; j++) {
-                execTime[j] = write(filename + loop, size*loop, 1, 0, 0, buffered, skipDir,
+                execTime[j] = write(filename + loop, size * loop, 1, 0, 0, buffered, skipDir,
                         false);
                 fStream.write((execTime[j] + "\t\t").getBytes());
                 sumTime += execTime[j];
@@ -311,7 +311,7 @@ public class CrailBenchmark {
             fStream.write((loop * 1024 + "\t\t").getBytes());
 
             for (int j = 0; j < loopTimes; j++) {
-                execTime[j] = write(filename + loop, size*loop * 1024, 1, 0, 0, buffered, skipDir,
+                execTime[j] = write(filename + loop, size * loop * 1024, 1, 0, 0, buffered, skipDir,
                         false);
                 fStream.write((execTime[j] + "\t\t").getBytes());
                 sumTime += execTime[j];

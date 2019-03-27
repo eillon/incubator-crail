@@ -38,11 +38,17 @@ public class CrailConstants {
     public static final String STORAGE_NVM_RATE_RATIO_KEY = "crail.storage.dram.rateratio";
     public static double STORAGE_NVM_RATE_RATIO = 2400;
 
-    public static final String NETWORK_BANDWIDTH_KEY = "crail.network.bandwidth";  // Gbps
-    public static double NETWORK_BANDWIDTH = 100;
+    public static final String NETWORK_TCP_BANDWIDTH_KEY = "crail.network.tcp.bandwidth";  // Gbps
+    public static double NETWORK_TCP_BANDWIDTH = 100;
 
-    public static final String NETWORK_DELAY_KEY = "crail.network.delay";  // s
-    public static double NETWORK_DELAY = 0.001;
+    public static final String NETWORK_TCP_DELAY_KEY = "crail.network.tcp.delay";  // s
+    public static double NETWORK_TCP_DELAY = 0.001;
+
+    public static final String NETWORK_RDMA_BANDWIDTH_KEY = "crail.network.rdma.bandwidth";
+    public static double NETWORK_RDMA_BANDWIDTH = 100;
+
+    public static final String NETWORK_RDMA_DELAY_KEY = "crail.network.rdma.delay";
+    public static double NETWORK_RDMA_DELAY = 0.001;
 
     // --------------------------
 
@@ -245,11 +251,17 @@ public class CrailConstants {
         if (conf.get(STORAGE_NVM_RATE_RATIO_KEY) != null) {
             STORAGE_NVM_RATE_RATIO = Double.parseDouble(conf.get(STORAGE_NVM_RATE_RATIO_KEY));
         }
-        if (conf.get(NETWORK_BANDWIDTH_KEY) != null) {
-            NETWORK_BANDWIDTH = Double.parseDouble(conf.get(NETWORK_BANDWIDTH_KEY));
+        if (conf.get(NETWORK_TCP_BANDWIDTH_KEY) != null) {
+            NETWORK_TCP_BANDWIDTH = Double.parseDouble(conf.get(NETWORK_TCP_BANDWIDTH_KEY));
         }
-        if (conf.get(NETWORK_DELAY_KEY) != null) {
-            NETWORK_DELAY = Double.parseDouble(conf.get(NETWORK_DELAY_KEY));
+        if (conf.get(NETWORK_TCP_DELAY_KEY) != null) {
+            NETWORK_TCP_DELAY = Double.parseDouble(conf.get(NETWORK_TCP_DELAY_KEY));
+        }
+        if (conf.get(NETWORK_RDMA_BANDWIDTH_KEY) != null) {
+            NETWORK_RDMA_BANDWIDTH = Double.parseDouble(conf.get(NETWORK_RDMA_BANDWIDTH_KEY));
+        }
+        if (conf.get(NETWORK_RDMA_DELAY_KEY) != null) {
+            NETWORK_RDMA_DELAY = Double.parseDouble(conf.get(NETWORK_RDMA_DELAY_KEY));
         }
     }
 
@@ -288,8 +300,10 @@ public class CrailConstants {
         LOG.info(STORAGE_DRAM_RATE_RATIO_KEY + " " + STORAGE_DRAM_RATE_RATIO);
         LOG.info(STORAGE_NVM_MAX_IO_RATE_KEY + " " + STORAGE_NVM_MAX_IO_RATE);
         LOG.info(STORAGE_NVM_RATE_RATIO_KEY + " " + STORAGE_NVM_RATE_RATIO);
-        LOG.info(NETWORK_BANDWIDTH_KEY + " " + NETWORK_BANDWIDTH);
-        LOG.info(NETWORK_DELAY_KEY + " " + NETWORK_DELAY);
+        LOG.info(NETWORK_TCP_BANDWIDTH_KEY + " " + NETWORK_TCP_BANDWIDTH);
+        LOG.info(NETWORK_TCP_DELAY_KEY + " " + NETWORK_TCP_DELAY);
+        LOG.info(NETWORK_RDMA_BANDWIDTH_KEY + " " + NETWORK_RDMA_BANDWIDTH);
+        LOG.info(NETWORK_RDMA_DELAY_KEY + " " + NETWORK_RDMA_DELAY);
     }
 
     public static void verify() throws IOException {
