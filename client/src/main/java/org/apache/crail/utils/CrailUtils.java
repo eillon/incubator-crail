@@ -294,23 +294,27 @@ public class CrailUtils {
 	}
 
 	/**
-	 * 计算网络传输耗时，适用于Tcp
+	 * 计算网络传输耗时
 	 * @param H 带宽，暂时由配置文件指定
 	 * @param d namenode和datanode间的延迟，由配置文件指定 -- 这个必须改
-	 * @param writeTimes 写入次数,当操作是
+	 * @param block_size 块大小
 	 * @param size
-	 * @param isSync
+	 * @param netType 网络传输类型，0为本地、1为tcp、2为rdma
 	 * @return
 	 */
-	public static double getTcpNetConsumption(double H, double d, int writeTimes, double size, boolean isSync){
-		return size/(1024*H/8) + size/CrailConstants.BLOCK_SIZE*d;
+	public static double getNetworkConsumption(double H, double d, long block_size, double size, int netType){
+		double time = 0;
+		switch (netType){
+			case 0:
+				time = 0;
+				break;
+			case 1:
+				time = size/(1024*H/8) + size/block_size*d;
+				break;
+			case 2:
+			default:
+				LOG.error("un implement function");
+		}
+		return time;
 	}
-
-	//
-	public static double getRdmaNetConsumption(){
-		LOG.warn("un achieved function");
-		return 0;
-	}
-
-
 }

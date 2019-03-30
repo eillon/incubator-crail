@@ -25,7 +25,7 @@ import java.nio.ByteBuffer;
 	DataNodeStatistics不仅应该有freeblocks，还应该有M、w、H、d
  */
 public class DataNodeStatistics {
-    public static final int CSIZE = 44;
+    public static final int CSIZE = 48;
 
     private long serviceId;
     private int freeBlockCount;
@@ -34,6 +34,8 @@ public class DataNodeStatistics {
     private double H;
     private double d;
 
+    private int netType;
+
     public DataNodeStatistics() {
         this.serviceId = 0;
         this.freeBlockCount = 0;
@@ -41,6 +43,7 @@ public class DataNodeStatistics {
         this.H = 0;
         this.w = 0;
         this.d = 0;
+        this.netType = 0;
     }
 
     public int write(ByteBuffer buffer) {
@@ -50,6 +53,7 @@ public class DataNodeStatistics {
         buffer.putDouble(w);
         buffer.putDouble(H);
         buffer.putDouble(d);
+        buffer.putInt(netType);
         return CSIZE;
     }
 
@@ -60,6 +64,7 @@ public class DataNodeStatistics {
         this.w = buffer.getDouble();
         this.H = buffer.getDouble();
         this.d = buffer.getDouble();
+        this.netType = buffer.getInt();
     }
 
     public int getFreeBlockCount() {
@@ -77,6 +82,7 @@ public class DataNodeStatistics {
         this.w = statistics.getW();
         this.H = statistics.getH();
         this.d = statistics.getD();
+        this.netType = statistics.getNetType();
     }
 
     public void setServiceId(long serviceId) {
@@ -120,9 +126,17 @@ public class DataNodeStatistics {
         this.d = d;
     }
 
+    public int getNetType() {
+        return netType;
+    }
+
+    public void setNetType(int netType) {
+        this.netType = netType;
+    }
+
     @Override
     public String toString() {
         return "DataNodeStatistics [serviceId=" + serviceId + ", freeBlockCount="
-                + freeBlockCount + ", M=" + M + ", w=" + w + ", H=" + H + ", d=" + d + "]";
+                + freeBlockCount + ", M=" + M + ", w=" + w + ", H=" + H + ", d=" + d + ", netType=" + netType + "]";
     }
 }

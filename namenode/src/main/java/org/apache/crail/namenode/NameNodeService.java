@@ -424,7 +424,7 @@ public class NameNodeService implements RpcNameNodeService, Sequencer {
         dnInfoNn.touch();
         response.setServiceId(serviceId);
         response.setFreeBlockCount(dnInfoNn.getBlockCount());
-        response.setBasicInfo(dnInfoNn.getM(), dnInfoNn.getW(), dnInfoNn.getH(), dnInfoNn.getD());
+        response.setBasicInfo(dnInfoNn.getM(), dnInfoNn.getW(), dnInfoNn.getH(), dnInfoNn.getD(), dnInfoNn.getNetType());
 
         return RpcErrors.ERR_OK;
     }
@@ -461,6 +461,8 @@ public class NameNodeService implements RpcNameNodeService, Sequencer {
         return error;
     }
 
+    // fileTree get Block 的位置
+    // coreStream 里调用了该函数，通过RpcFuture的方式
     @Override
     public short getBlock(RpcRequestMessage.GetBlockReq request, RpcResponseMessage.GetBlockRes response, RpcNameNodeState errorState) throws Exception {
         //check protocol
@@ -492,13 +494,14 @@ public class NameNodeService implements RpcNameNodeService, Sequencer {
 
         NameNodeBlockInfo block = fileInfo.getBlock(index);
         if (block == null && fileInfo.getToken() == token) {
-            block = blockStore.getBlock(fileInfo.getStorageClass(), fileInfo.getLocationClass());
+            block = blockStore.getBlock(fileInfo.getStorageClass(), fileInfo.getLocationClass());  // fileBlocks 也要通过blockStore进行分配
             if (block == null) {
                 return RpcErrors.ERR_NO_FREE_BLOCKS;
             }
             if (!fileInfo.addBlock(index, block)) {
                 return RpcErrors.ERR_ADD_BLOCK_FAILED;
             }
+            LOG.debug("NameNodeService: getBlock: add block {} to index {}, fileInfo is {}", block, index, fileInfo);
             block = fileInfo.getBlock(index);
             if (block == null) {
                 return RpcErrors.ERR_ADD_BLOCK_FAILED;

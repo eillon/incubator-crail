@@ -79,7 +79,7 @@ public abstract class AbstractNode extends FileInfo implements Delayed {
 	
 	@Override
 	public String toString() {
-		return String.format("%08d\t%08d\t\t%08d\t\t%08d\t\t%08d", getFd(), fileComponent, getCapacity(), getType().getLabel(), getDirOffset());
+		return String.format("%08d\t%08d\t\t%08d\t\t%08d\t\t%08d\t%08d\t%08d", getFd(), fileComponent, getCapacity(), getType().getLabel(), getDirOffset(), storageClass, locationClass);
 	}	
 
 	@Override

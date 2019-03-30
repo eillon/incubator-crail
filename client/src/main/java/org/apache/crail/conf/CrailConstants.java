@@ -50,6 +50,9 @@ public class CrailConstants {
     public static final String NETWORK_RDMA_DELAY_KEY = "crail.network.rdma.delay";
     public static double NETWORK_RDMA_DELAY = 0.001;
 
+    public static final String NETWORK_TYPE_KEY = "crail.network.type";
+    public static int NETWORK_TYPE = 0;  // 默认是本地，配置文件中必须改
+
     // --------------------------
 
     public static final String VERSION_KEY = "crail.version";
@@ -263,6 +266,9 @@ public class CrailConstants {
         if (conf.get(NETWORK_RDMA_DELAY_KEY) != null) {
             NETWORK_RDMA_DELAY = Double.parseDouble(conf.get(NETWORK_RDMA_DELAY_KEY));
         }
+        if (conf.get(NETWORK_TYPE_KEY) != null){
+            NETWORK_TYPE = Integer.parseInt(conf.get(NETWORK_TYPE_KEY));
+        }
     }
 
     public static void printConf() {
@@ -304,6 +310,7 @@ public class CrailConstants {
         LOG.info(NETWORK_TCP_DELAY_KEY + " " + NETWORK_TCP_DELAY);
         LOG.info(NETWORK_RDMA_BANDWIDTH_KEY + " " + NETWORK_RDMA_BANDWIDTH);
         LOG.info(NETWORK_RDMA_DELAY_KEY + " " + NETWORK_RDMA_DELAY);
+        LOG.info(NETWORK_TYPE_KEY + " " + NETWORK_TYPE);
     }
 
     public static void verify() throws IOException {
@@ -316,6 +323,5 @@ public class CrailConstants {
         if (CrailConstants.STORAGE_CLASSES < CrailUtils.getStorageClasses(STORAGE_TYPES)) {
             throw new IOException("crail.storage.classes cannot be smaller than the number of storage types " + CrailUtils.getStorageClasses(STORAGE_TYPES));
         }
-
     }
 }

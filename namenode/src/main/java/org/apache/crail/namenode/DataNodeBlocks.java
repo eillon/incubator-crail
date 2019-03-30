@@ -38,12 +38,12 @@ public class DataNodeBlocks extends DataNodeInfo {
     private long token;
 
     public static DataNodeBlocks fromDataNodeInfo(DataNodeInfo dnInfo) throws UnknownHostException {
-        DataNodeBlocks dnInfoNn = new DataNodeBlocks(dnInfo.getStorageType(), dnInfo.getStorageClass(), dnInfo.getLocationClass(), dnInfo.getIpAddress(), dnInfo.getPort(), dnInfo.getM(), dnInfo.getW(), dnInfo.getH(), dnInfo.getD());
+        DataNodeBlocks dnInfoNn = new DataNodeBlocks(dnInfo.getStorageType(), dnInfo.getStorageClass(), dnInfo.getLocationClass(), dnInfo.getIpAddress(), dnInfo.getPort(), dnInfo.getM(), dnInfo.getW(), dnInfo.getH(), dnInfo.getD(), dnInfo.getNetType());
         return dnInfoNn;
     }
 
-    private DataNodeBlocks(int storageType, int getStorageClass, int locationClass, byte[] ipAddress, int port, double M, double w, double H, double d) throws UnknownHostException {
-        super(storageType, getStorageClass, locationClass, ipAddress, port, M, w, H, d);
+    private DataNodeBlocks(int storageType, int getStorageClass, int locationClass, byte[] ipAddress, int port, double M, double w, double H, double d, int netType) throws UnknownHostException {
+        super(storageType, getStorageClass, locationClass, ipAddress, port, M, w, H, d, netType);
         this.regions = new ConcurrentHashMap<Long, BlockInfo>();
         this.freeBlocks = new LinkedBlockingQueue<NameNodeBlockInfo>();
     }

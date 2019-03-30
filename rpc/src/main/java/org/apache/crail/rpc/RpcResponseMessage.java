@@ -606,11 +606,12 @@ public class RpcResponseMessage {
             this.statistics.setServiceId(serviceId);
         }
 
-        public void setBasicInfo(double M, double w, double H, double d) {
+        public void setBasicInfo(double M, double w, double H, double d, int netType) {
             this.statistics.setM(M);
             this.statistics.setW(w);
             this.statistics.setH(H);
             this.statistics.setD(d);
+            this.statistics.setNetType(netType);
         }
     }
 

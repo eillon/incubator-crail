@@ -169,7 +169,7 @@ public interface StorageServer extends Configurable, Runnable {
             d = 1;
         }
 
-        StorageRpcClient storageRpc = new StorageRpcClient(storageType, CrailStorageClass.get(storageClass), server.getAddress(), rpcConnection, M, w, H, d);
+        StorageRpcClient storageRpc = new StorageRpcClient(storageType, CrailStorageClass.get(storageClass), server.getAddress(), rpcConnection, M, w, H, d, CrailConstants.NETWORK_TYPE);
 
         HashMap<Long, Long> blockCount = new HashMap<Long, Long>();
         long sumCount = 0;

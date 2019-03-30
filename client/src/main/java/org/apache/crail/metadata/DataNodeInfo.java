@@ -27,18 +27,18 @@ import org.slf4j.Logger;
 
 public class DataNodeInfo {
     private static final Logger LOG = CrailUtils.getLogger();
-    public static final int CSIZE = 52;
+    public static final int CSIZE = 56;
 
     private int storageType;
     private int storageClass;
     private int locationClass;
     private byte[] ipAddress;
     private int port;
-    private String[] storageName;
     private double M;
     private double w;
     private double H;
     private double d;
+    private int netType;
 
     private long key;
 
@@ -53,9 +53,10 @@ public class DataNodeInfo {
         this.w = 0;
         this.H = 0;
         this.d = 0;
+        this.netType = 0;
     }
 
-    public DataNodeInfo(int storageType, int storageClass, int locationClass, byte[] ipAddress, int port, double M, double w, double H, double d) {
+    public DataNodeInfo(int storageType, int storageClass, int locationClass, byte[] ipAddress, int port, double M, double w, double H, double d, int netType) {
         this();
 
         this.storageType = storageType;
@@ -69,6 +70,7 @@ public class DataNodeInfo {
         this.w = w;
         this.H = H;
         this.d = d;
+        this.netType = netType;
     }
 
     void setDataNodeInfo(DataNodeInfo info) {
@@ -83,6 +85,7 @@ public class DataNodeInfo {
         this.w = info.getW();
         this.H = info.getH();
         this.d = info.getD();
+        this.netType = info.getNetType();
 
         this.key = 0;
     }
@@ -97,6 +100,7 @@ public class DataNodeInfo {
         buffer.putDouble(w);
         buffer.putDouble(H);
         buffer.putDouble(d);
+        buffer.putInt(netType);
         return CSIZE;
     }
 
@@ -110,6 +114,7 @@ public class DataNodeInfo {
         this.w = buffer.getDouble();
         this.H = buffer.getDouble();
         this.d = buffer.getDouble();
+        this.netType = buffer.getInt();
         this.key = 0;
     }
 
@@ -149,6 +154,10 @@ public class DataNodeInfo {
         return d;
     }
 
+    public int getNetType() {
+        return netType;
+    }
+
     public long key() {
         if (key == 0) {
             int a = java.util.Arrays.hashCode(ipAddress);
@@ -163,6 +172,6 @@ public class DataNodeInfo {
                 + storageClass + ", locationClass=" + locationClass
                 + ", ipAddress=" + Arrays.toString(ipAddress) + ", port="
                 + port + ", M=" + M + ", w=" + w + ", H=" + H + ", d="
-                + d + ", key=" + key() + "]";
+                + d + ", netType=" + netType + ", key=" + key() + "]";
     }
 }

@@ -42,17 +42,20 @@ public class BlockStore {
     private static final Logger LOG = CrailUtils.getLogger();
 
     private StorageClass[] storageClasses;
+    private Scheduler scheduler;
 
     public BlockStore() {
         storageClasses = new StorageClass[CrailConstants.STORAGE_CLASSES];
         for (int i = 0; i < CrailConstants.STORAGE_CLASSES; i++) {
             this.storageClasses[i] = new StorageClass(i);
         }
+        scheduler = new MinHeapScheduler();
     }
 
     public short addBlock(NameNodeBlockInfo blockInfo) throws UnknownHostException {
         int storageClass = blockInfo.getDnInfo().getStorageClass();
         LOG.debug("BlockStore: addBlock {} to storageClass {}", blockInfo, storageClass);
+        scheduler.update(new SchedDataInfo(blockInfo.getDnInfo()));
         return storageClasses[storageClass].addBlock(blockInfo);
     }
 
@@ -63,6 +66,7 @@ public class BlockStore {
 
     public short updateRegion(BlockInfo region) {
         int storageClass = region.getDnInfo().getStorageClass();
+        scheduler.update(new SchedDataInfo(region.getDnInfo()));
         return storageClasses[storageClass].updateRegion(region);
     }
 
@@ -77,6 +81,15 @@ public class BlockStore {
                 LOG.warn("requested storage class is invalid");
             }
         }
+
+        if (storageClass == 0 && locationAffinity == 0) {
+            SchedDataInfo schedDataInfo = scheduler.getRoot();
+            storageClass = schedDataInfo.getStorageClass();
+            locationAffinity = schedDataInfo.getLocationClass();
+            LOG.debug("BlockStore: scheduler: schedDataInfo is {}", schedDataInfo);
+            block = storageClasses[storageClass].getBlock(locationAffinity);
+        }
+
         if (block == null) {
             for (int i = 0; i < storageClasses.length; i++) {
                 block = storageClasses[i].getBlock(locationAffinity);
@@ -85,7 +98,7 @@ public class BlockStore {
                 }
             }
         }
-        LOG.debug("BlockStore: getBlock {}， storageClass is {}, locationAffinity is {}", block, storageClass, locationAffinity);
+        LOG.debug("BlockStore: getBlock {}， storageClass is {}, locationAffinity is {}, real storageClass is {}, real locationClass is {}", block, storageClass, locationAffinity, block.getDnInfo().getStorageClass(), block.getDnInfo().getLocationClass());
         return block;
     }
 
