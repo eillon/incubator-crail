@@ -83,7 +83,7 @@ public class BlockStore {
         }
 
         if (storageClass == 0 && locationAffinity == 0) {
-            SchedDataInfo schedDataInfo = scheduler.getRoot();
+            SchedDataInfo schedDataInfo = scheduler.getResult();
             storageClass = schedDataInfo.getStorageClass();
             locationAffinity = schedDataInfo.getLocationClass();
             LOG.debug("BlockStore: scheduler: schedDataInfo is {}", schedDataInfo);

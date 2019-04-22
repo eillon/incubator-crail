@@ -111,7 +111,7 @@ public class MinHeapScheduler implements Scheduler {
         return this.heap.toString();
     }
 
-    public SchedDataInfo getRoot() {
+    public SchedDataInfo getResult() {
         LOG.debug("MinHeapScheduler: printHeap: {}", printHeap());
         return heap.get(0);
     }

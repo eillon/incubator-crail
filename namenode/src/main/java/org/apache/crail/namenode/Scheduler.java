@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface Scheduler {
-    abstract SchedDataInfo getRoot();
+    abstract SchedDataInfo getResult();
 
     abstract void update(SchedDataInfo schedDataInfo);
 }
