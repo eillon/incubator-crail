@@ -29,12 +29,13 @@ import org.apache.crail.metadata.FileName;
 
 public class RpcRequestMessage {
     public static class CreateFileReq implements RpcProtocol.NameNodeRpcMessage {
-        public static int CSIZE = FileName.CSIZE + 16;
+        public static int CSIZE = FileName.CSIZE + 24;
 
         protected FileName filename;
         protected CrailNodeType type;
         protected int storageClass;
         protected int locationClass;
+        protected double Mt;
         protected boolean enumerable;
 
         public CreateFileReq() {
@@ -42,14 +43,16 @@ public class RpcRequestMessage {
             this.type = CrailNodeType.DATAFILE;
             this.storageClass = 0;
             this.locationClass = 0;
+            this.Mt = 10;
             this.enumerable = true;
         }
 
-        public CreateFileReq(FileName filename, CrailNodeType type, int storageClass, int locationClass, boolean enumerable) {
+        public CreateFileReq(FileName filename, CrailNodeType type, int storageClass, int locationClass, double Mt, boolean enumerable) {
             this.filename = filename;
             this.type = type;
             this.storageClass = storageClass;
             this.locationClass = locationClass;
+            this.Mt = Mt;
             this.enumerable = enumerable;
         }
 
@@ -69,6 +72,10 @@ public class RpcRequestMessage {
             return locationClass;
         }
 
+        public double getMt() {
+            return Mt;
+        }
+
         public boolean isEnumerable() {
             return enumerable;
         }
@@ -86,6 +93,7 @@ public class RpcRequestMessage {
             buffer.putInt(type.getLabel());
             buffer.putInt(storageClass);
             buffer.putInt(locationClass);
+            buffer.putDouble(Mt);
             buffer.putInt(enumerable ? 1 : 0);
 
             return CSIZE;
@@ -97,6 +105,7 @@ public class RpcRequestMessage {
             type = CrailNodeType.parse(_type);
             storageClass = buffer.getInt();
             locationClass = buffer.getInt();
+            Mt = buffer.getDouble();
             int _enumerable = buffer.getInt();
             enumerable = (_enumerable == 1) ? true : false;
         }
@@ -105,7 +114,7 @@ public class RpcRequestMessage {
         public String toString() {
             return "CreateFileReq [filename=" + filename + ", type=" + type
                     + ", storageClass=" + storageClass + ", locationClass="
-                    + locationClass + ", enumerable=" + enumerable + "]";
+                    + locationClass + ", Mt=" + Mt + ", enumerable=" + enumerable + "]";
         }
     }
 

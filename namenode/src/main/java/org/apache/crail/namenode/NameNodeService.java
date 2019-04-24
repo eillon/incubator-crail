@@ -87,9 +87,10 @@ public class NameNodeService implements RpcNameNodeService, Sequencer {
         //get params
         FileName fileHash = request.getFileName();
         CrailNodeType type = request.getFileType();
-        boolean writeable = type.isDirectory() ? false : true;
+        boolean writeable = !type.isDirectory();
         int storageClass = request.getStorageClass();
         int locationClass = request.getLocationClass();
+        double Mt = request.getMt();
         boolean enumerable = request.isEnumerable();
         LOG.debug("NameNodeService: createFile, params is: fileName {}, type {}, storageClass {}, locationClass {}", fileHash, type, storageClass, locationClass);
 
@@ -132,7 +133,7 @@ public class NameNodeService implements RpcNameNodeService, Sequencer {
         }
         fileTable.put(fileInfo.getFd(), fileInfo);
 
-        NameNodeBlockInfo fileBlock = blockStore.getBlock(fileInfo.getStorageClass(), fileInfo.getLocationClass());
+        NameNodeBlockInfo fileBlock = blockStore.getBlock(fileInfo.getStorageClass(), fileInfo.getLocationClass(),Mt);
         LOG.debug("NameNodeService: createFile: get fileBlock from blockStore, fileBlock is {}, storageClass is {}, locationClass is {}", fileBlock, fileInfo.getStorageClass(), fileInfo.getLocationClass());
         if (fileBlock == null) {
             return RpcErrors.ERR_NO_FREE_BLOCKS;
@@ -147,7 +148,7 @@ public class NameNodeService implements RpcNameNodeService, Sequencer {
             int index = CrailUtils.computeIndex(fileInfo.getDirOffset());
             parentBlock = parentInfo.getBlock(index);
             if (parentBlock == null) {
-                parentBlock = blockStore.getBlock(parentInfo.getStorageClass(), parentInfo.getLocationClass());
+                parentBlock = blockStore.getBlock(parentInfo.getStorageClass(), parentInfo.getLocationClass(),10);
                 if (parentBlock == null) {
                     return RpcErrors.ERR_NO_FREE_BLOCKS;
                 }
@@ -374,7 +375,7 @@ public class NameNodeService implements RpcNameNodeService, Sequencer {
         index = CrailUtils.computeIndex(srcFile.getDirOffset());
         NameNodeBlockInfo dstBlock = dstParent.getBlock(index);
         if (dstBlock == null) {
-            dstBlock = blockStore.getBlock(dstParent.getStorageClass(), dstParent.getLocationClass());
+            dstBlock = blockStore.getBlock(dstParent.getStorageClass(), dstParent.getLocationClass(),10);
             if (dstBlock == null) {
                 return RpcErrors.ERR_NO_FREE_BLOCKS;
             }
@@ -494,7 +495,7 @@ public class NameNodeService implements RpcNameNodeService, Sequencer {
 
         NameNodeBlockInfo block = fileInfo.getBlock(index);
         if (block == null && fileInfo.getToken() == token) {
-            block = blockStore.getBlock(fileInfo.getStorageClass(), fileInfo.getLocationClass());  // fileBlocks 也要通过blockStore进行分配
+            block = blockStore.getBlock(fileInfo.getStorageClass(), fileInfo.getLocationClass(),10);  // fileBlocks 也要通过blockStore进行分配
             if (block == null) {
                 return RpcErrors.ERR_NO_FREE_BLOCKS;
             }

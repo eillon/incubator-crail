@@ -77,9 +77,11 @@ public class MinHeapScheduler implements Scheduler {
     }
 
     // 调用这个即可，如果没有则增加
-    public void update(SchedDataInfo value) {
+    public void update(DataNodeBlocks val) {
+        SchedDataInfo value = new SchedDataInfo(val);
         if (heap.contains(value)) {
             int index = heap.indexOf(value);
+            heap.get(index).update(val);
             adjust(index);
         } else {
             add(value);
@@ -111,7 +113,7 @@ public class MinHeapScheduler implements Scheduler {
         return this.heap.toString();
     }
 
-    public SchedDataInfo getResult() {
+    public SchedDataInfo getResult(double Mt) {
         LOG.debug("MinHeapScheduler: printHeap: {}", printHeap());
         return heap.get(0);
     }

@@ -47,11 +47,11 @@ public class RpcDispatcher implements RpcConnection {
 
 	@Override
 	public RpcFuture<RpcCreateFile> createFile(FileName filename,
-			CrailNodeType type, int storageClass, int locationClass, boolean enumerable)
+			CrailNodeType type, int storageClass, int locationClass, double Mt, boolean enumerable)
 			throws IOException {
 		int index = computeIndex(filename.getComponent(0));
 //		LOG.info("issuing create file for filename [" + filename.toString() + "], on index " + index);
-		return connections[index].createFile(filename, type, storageClass, locationClass, enumerable);
+		return connections[index].createFile(filename, type, storageClass, locationClass, Mt, enumerable);
 	}
 
 	@Override

@@ -64,7 +64,7 @@ public class CrailBenchmark {
     // 但每次write过程中也会有get(),或者syncSlice()...
     // 屏蔽掉了里面的warmup
     double write(String filename, int size, int loop, int storageClass, int locationClass, boolean buffered, boolean
-            skipDir, boolean printInfo) throws Exception {
+            skipDir, boolean printInfo, double Mt) throws Exception {
         if (printInfo) {
             System.out.println("write, filename " + filename + ", size " + size + ", loop " + loop + ", storageClass " + storageClass + ", locationClass " + locationClass + ", buffered " + buffered);
         }
@@ -96,7 +96,7 @@ public class CrailBenchmark {
         double sumbytes = 0;
         double ops = 0;
 
-        CrailFile file = fs.create(filename, CrailNodeType.DATAFILE, CrailStorageClass.get(storageClass), CrailLocationClass.get(locationClass), !skipDir).get().asFile();
+        CrailFile file = fs.create(filename, CrailNodeType.DATAFILE, CrailStorageClass.get(storageClass), CrailLocationClass.get(locationClass), Mt, !skipDir).get().asFile();
         CrailBufferedOutputStream bufferedStream = buffered ? file.getBufferedOutputStream(_capacity) : null;
         CrailOutputStream directStream = !buffered ? file.getDirectOutputStream(_capacity) : null;
 
@@ -139,7 +139,7 @@ public class CrailBenchmark {
         return executionTime;
     }
 
-    void testLocalDataWrite(String filename, int storageClass, int locationClass, boolean buffered, boolean skipDir) throws
+    void testLocalDataWrite(String filename, int storageClass, int locationClass, boolean buffered, boolean skipDir, double Mt) throws
             Exception {
         // write 1M once time, loop n times
         int loopTimes = 3;// exec 3 times, use the avg
@@ -160,7 +160,7 @@ public class CrailBenchmark {
 
             for (int j = 0; j < loopTimes; j++) {
                 execTime[j] = write(filename + loop, size, loop, storageClass, locationClass, buffered, skipDir,
-                        false);
+                        false, Mt);
                 fStream.write((execTime[j] + "\t\t").getBytes());
                 sumTime += execTime[j];
                 TimeList += execTime[j] + ", ";
@@ -189,7 +189,7 @@ public class CrailBenchmark {
 
             for (int j = 0; j < loopTimes; j++) {
                 execTime[j] = write(filename + loop, size, loop, storageClass, locationClass, buffered, skipDir,
-                        false);
+                        false, Mt);
                 fStream.write((execTime[j] + "\t\t").getBytes());
                 sumTime += execTime[j];
                 TimeList += execTime[j] + ", ";
@@ -217,7 +217,7 @@ public class CrailBenchmark {
 
             for (int j = 0; j < loopTimes; j++) {
                 execTime[j] = write(filename + loop, size, loop * 1024, storageClass, locationClass, buffered, skipDir,
-                        false);
+                        false, Mt);
                 fStream.write((execTime[j] + "\t\t").getBytes());
                 sumTime += execTime[j];
                 TimeList += execTime[j] + ", ";
@@ -235,7 +235,7 @@ public class CrailBenchmark {
         System.out.println("benchmark end");
     }
 
-    void testNetTransfer(String filename, boolean buffered, boolean skipDir) throws Exception {
+    void testNetTransfer(String filename, boolean buffered, boolean skipDir, double Mt) throws Exception {
         // write 1M once time, loop n times
         int loopTimes = 3;// exec 3 times, use the avg
         int size = 1024 * 1024;
@@ -255,7 +255,7 @@ public class CrailBenchmark {
 
             for (int j = 0; j < loopTimes; j++) {
                 execTime[j] = write(filename + loop, size * loop, 1, 0, 0, buffered, skipDir,
-                        false);
+                        false, Mt);
                 fStream.write((execTime[j] + "\t\t").getBytes());
                 sumTime += execTime[j];
                 TimeList += execTime[j] + ", ";
@@ -284,7 +284,7 @@ public class CrailBenchmark {
 
             for (int j = 0; j < loopTimes; j++) {
                 execTime[j] = write(filename + loop, size * loop, 1, 0, 0, buffered, skipDir,
-                        false);
+                        false, Mt);
                 fStream.write((execTime[j] + "\t\t").getBytes());
                 sumTime += execTime[j];
                 TimeList += execTime[j] + ", ";
@@ -312,7 +312,7 @@ public class CrailBenchmark {
 
             for (int j = 0; j < loopTimes; j++) {
                 execTime[j] = write(filename + loop, size * loop * 1024, 1, 0, 0, buffered, skipDir,
-                        false);
+                        false, Mt);
                 fStream.write((execTime[j] + "\t\t").getBytes());
                 sumTime += execTime[j];
                 TimeList += execTime[j] + ", ";
@@ -330,7 +330,7 @@ public class CrailBenchmark {
         System.out.println("benchmark end");
     }
 
-    void writeAsync(String filename, int size, int loop, int batch, int storageClass, int locationClass, boolean skipDir) throws Exception {
+    void writeAsync(String filename, int size, int loop, int batch, int storageClass, int locationClass, boolean skipDir, double Mt) throws Exception {
         System.out.println("writeAsync, filename " + filename + ", size " + size + ", loop " + loop + ", batch " + batch + ", storageClass " + storageClass + ", locationClass " + locationClass);
 
         ConcurrentLinkedQueue<CrailBuffer> bufferQueue = new ConcurrentLinkedQueue<CrailBuffer>();
@@ -361,7 +361,7 @@ public class CrailBenchmark {
         long _capacity = _loop * _bufsize;
         double sumbytes = 0;
         double ops = 0;
-        CrailFile file = fs.create(filename, CrailNodeType.DATAFILE, CrailStorageClass.get(storageClass), CrailLocationClass.get(locationClass), !skipDir).get().asFile();
+        CrailFile file = fs.create(filename, CrailNodeType.DATAFILE, CrailStorageClass.get(storageClass), CrailLocationClass.get(locationClass), Mt, !skipDir).get().asFile();
         CrailOutputStream directStream = file.getDirectOutputStream(_capacity);
         long start = System.currentTimeMillis();
         for (int i = 0; i < batch - 1 && ops < loop; i++) {
@@ -727,7 +727,7 @@ public class CrailBenchmark {
         fs.getStatistics().print("close");
     }
 
-    void createFile(String filename, int loop) throws Exception, InterruptedException {
+    void createFile(String filename, int loop, double Mt) throws Exception, InterruptedException {
         System.out.println("createFile, filename " + filename + ", loop " + loop);
 
         //warmup
@@ -741,7 +741,7 @@ public class CrailBenchmark {
         System.out.println("starting benchmark...");
         fs.getStatistics().reset();
         LinkedBlockingQueue<String> pathQueue = new LinkedBlockingQueue<String>();
-        fs.create(filename, CrailNodeType.DIRECTORY, CrailStorageClass.DEFAULT, CrailLocationClass.DEFAULT, true).get().syncDir();
+        fs.create(filename, CrailNodeType.DIRECTORY, CrailStorageClass.DEFAULT, CrailLocationClass.DEFAULT, Mt,true).get().syncDir();
         int filecounter = 0;
         for (int i = 0; i < loop; i++) {
             String name = "" + filecounter++;
@@ -753,7 +753,7 @@ public class CrailBenchmark {
         long start = System.currentTimeMillis();
         while (!pathQueue.isEmpty()) {
             String path = pathQueue.poll();
-            fs.create(path, CrailNodeType.DATAFILE, CrailStorageClass.DEFAULT, CrailLocationClass.DEFAULT, true).get().syncDir();
+            fs.create(path, CrailNodeType.DATAFILE, CrailStorageClass.DEFAULT, CrailLocationClass.DEFAULT, Mt,true).get().syncDir();
         }
         long end = System.currentTimeMillis();
         double executionTime = ((double) (end - start)) / 1000.0;
@@ -769,7 +769,7 @@ public class CrailBenchmark {
         fs.getStatistics().print("close");
     }
 
-    void createFileAsync(String filename, int loop, int batch) throws Exception, InterruptedException {
+    void createFileAsync(String filename, int loop, int batch, double Mt) throws Exception, InterruptedException {
         System.out.println("createFileAsync, filename " + filename + ", loop " + loop + ", batch " + batch);
 
         //warmup
@@ -785,7 +785,7 @@ public class CrailBenchmark {
         LinkedBlockingQueue<Future<CrailNode>> futureQueue = new LinkedBlockingQueue<Future<CrailNode>>();
         LinkedBlockingQueue<CrailFile> fileQueue = new LinkedBlockingQueue<CrailFile>();
         LinkedBlockingQueue<String> pathQueue = new LinkedBlockingQueue<String>();
-        fs.create(filename, CrailNodeType.DIRECTORY, CrailStorageClass.DEFAULT, CrailLocationClass.DEFAULT, true).get().syncDir();
+        fs.create(filename, CrailNodeType.DIRECTORY, CrailStorageClass.DEFAULT, CrailLocationClass.DEFAULT, Mt,true).get().syncDir();
 
         for (int i = 0; i < loop; i++) {
             String name = "/" + i;
@@ -798,7 +798,7 @@ public class CrailBenchmark {
             //single operation == loop
             for (int j = 0; j < batch; j++) {
                 String path = pathQueue.poll();
-                Future<CrailNode> future = fs.create(path, CrailNodeType.DATAFILE, CrailStorageClass.DEFAULT, CrailLocationClass.DEFAULT, true);
+                Future<CrailNode> future = fs.create(path, CrailNodeType.DATAFILE, CrailStorageClass.DEFAULT, CrailLocationClass.DEFAULT, Mt,true);
                 futureQueue.add(future);
             }
             for (int j = 0; j < batch; j++) {
@@ -823,16 +823,16 @@ public class CrailBenchmark {
 
     }
 
-    void createMultiFile(String filename, int storageClass) throws Exception, InterruptedException {
+    void createMultiFile(String filename, int storageClass, double Mt) throws Exception, InterruptedException {
         System.out.println("createMultiFile, filename " + filename);
-        fs.create(filename, CrailNodeType.MULTIFILE, CrailStorageClass.get(storageClass), CrailLocationClass.DEFAULT, true).get().syncDir();
+        fs.create(filename, CrailNodeType.MULTIFILE, CrailStorageClass.get(storageClass), CrailLocationClass.DEFAULT, Mt,true).get().syncDir();
     }
 
-    void getKey(String filename, int size, int loop) throws Exception {
+    void getKey(String filename, int size, int loop, double Mt) throws Exception {
         System.out.println("getKey, path " + filename + ", size " + size + ", loop " + loop);
 
         CrailBuffer buf = fs.allocateBuffer().clear().limit(size).slice();
-        CrailFile file = fs.create(filename, CrailNodeType.DATAFILE, CrailStorageClass.DEFAULT, CrailLocationClass.DEFAULT, true).get().asFile();
+        CrailFile file = fs.create(filename, CrailNodeType.DATAFILE, CrailStorageClass.DEFAULT, CrailLocationClass.DEFAULT, Mt,true).get().asFile();
         file.syncDir();
         CrailOutputStream directOutputStream = file.getDirectOutputStream(0);
         directOutputStream.write(buf).get();
@@ -972,9 +972,9 @@ public class CrailBenchmark {
         fs.getStatistics().print("close");
     }
 
-    void early(String filename) throws Exception {
+    void early(String filename, double Mt) throws Exception {
         ByteBuffer buf = ByteBuffer.allocateDirect(32);
-        CrailFile file = fs.create(filename, CrailNodeType.DATAFILE, CrailStorageClass.DEFAULT, CrailLocationClass.DEFAULT, true).early().asFile();
+        CrailFile file = fs.create(filename, CrailNodeType.DATAFILE, CrailStorageClass.DEFAULT, CrailLocationClass.DEFAULT, Mt,true).early().asFile();
         CrailBufferedOutputStream stream = file.getBufferedOutputStream(0);
         System.out.println("buffered stream initialized");
 
@@ -994,13 +994,13 @@ public class CrailBenchmark {
         fs.getStatistics().print("close");
     }
 
-    void writeInt(String filename, int loop) throws Exception {
+    void writeInt(String filename, int loop, double Mt) throws Exception {
         System.out.println("writeInt, filename " + filename + ", loop " + loop);
 
         //benchmark
         System.out.println("starting benchmark...");
         double ops = 0;
-        CrailFile file = fs.create(filename, CrailNodeType.DATAFILE, CrailStorageClass.DEFAULT, CrailLocationClass.DEFAULT, true).get().asFile();
+        CrailFile file = fs.create(filename, CrailNodeType.DATAFILE, CrailStorageClass.DEFAULT, CrailLocationClass.DEFAULT, Mt,true).get().asFile();
         CrailBufferedOutputStream outputStream = file.getBufferedOutputStream(loop * 4);
         int intValue = 0;
         System.out.println("starting write at position " + outputStream.position());
@@ -1161,7 +1161,7 @@ public class CrailBenchmark {
             System.out.println("warmUp, warmupFile " + warmupFilename + ", operations " + operations);
         }
         if (operations > 0) {
-            CrailFile warmupFile = fs.create(warmupFilename, CrailNodeType.DATAFILE, CrailStorageClass.DEFAULT, CrailLocationClass.DEFAULT, true).get().asFile();
+            CrailFile warmupFile = fs.create(warmupFilename, CrailNodeType.DATAFILE, CrailStorageClass.DEFAULT, CrailLocationClass.DEFAULT, 10, true).get().asFile();
             CrailBufferedOutputStream warmupStream = warmupFile.getBufferedOutputStream(0);
             for (int i = 0; i < operations; i++) {
                 CrailBuffer buf = bufferList.poll();
@@ -1189,6 +1189,7 @@ public class CrailBenchmark {
         boolean useBuffered = true;
         boolean skipDir = false;
         boolean printInfo = true;
+        double Mt = 10;
 
         String benchmarkTypes = "write|writeAsync|readSequential|readRandom|readSequentialAsync|readMultiStream|"
                 + "createFile|createFileAsync|createMultiFile|getKey|getFile|getFileAsync|enumerateDir|browseDir|"
@@ -1205,6 +1206,7 @@ public class CrailBenchmark {
         Option openOption = Option.builder("o").desc("whether to keep the file system open [true|false]").hasArg().build();
         Option skipDirOption = Option.builder("d").desc("skip writing the directory record [true|false]").hasArg().build();
         Option bufferedOption = Option.builder("m").desc("use buffer streams [true|false]").hasArg().build();
+        Option MtOption = Option.builder("Mt").desc("block be stored in time [1..n] ").hasArg().build();
 
         Options options = new Options();
         options.addOption(typeOption);
@@ -1219,6 +1221,7 @@ public class CrailBenchmark {
         options.addOption(openOption);
         options.addOption(bufferedOption);
         options.addOption(skipDirOption);
+        options.addOption(MtOption);
 
         CommandLineParser parser = new DefaultParser();
         CommandLine line = parser.parse(options, Arrays.copyOfRange(args, 0, args.length));
@@ -1258,19 +1261,22 @@ public class CrailBenchmark {
         if (line.hasOption(skipDirOption.getOpt())) {
             skipDir = Boolean.parseBoolean(line.getOptionValue(skipDirOption.getOpt()));
         }
+        if (line.hasOption(MtOption.getOpt())){
+            Mt = Double.parseDouble(line.getOptionValue(MtOption.getOpt()));
+        }
 
         CrailBenchmark benchmark = new CrailBenchmark(warmup);
         if (type.equals("write")) {
             benchmark.open();
-            benchmark.write(filename, size, loop, storageClass, locationClass, useBuffered, skipDir, printInfo);
+            benchmark.write(filename, size, loop, storageClass, locationClass, useBuffered, skipDir, printInfo, Mt);
             benchmark.close();
         } else if (type.equalsIgnoreCase("testNetTransfer")) {
             benchmark.open();
-            benchmark.testNetTransfer(filename, useBuffered, skipDir);
+            benchmark.testNetTransfer(filename, useBuffered, skipDir, Mt);
             benchmark.close();
         } else if (type.equalsIgnoreCase("writeAsync")) {
             benchmark.open();
-            benchmark.writeAsync(filename, size, loop, batch, storageClass, locationClass, skipDir);
+            benchmark.writeAsync(filename, size, loop, batch, storageClass, locationClass, skipDir, Mt);
             benchmark.close();
         } else if (type.equalsIgnoreCase("readSequential")) {
             if (keepOpen) benchmark.open();
@@ -1310,19 +1316,19 @@ public class CrailBenchmark {
             if (keepOpen) benchmark.close();
         } else if (type.equals("createFile")) {
             benchmark.open();
-            benchmark.createFile(filename, loop);
+            benchmark.createFile(filename, loop, Mt);
             benchmark.close();
         } else if (type.equals("createFileAsync")) {
             benchmark.open();
-            benchmark.createFileAsync(filename, loop, batch);
+            benchmark.createFileAsync(filename, loop, batch, Mt);
             benchmark.close();
         } else if (type.equalsIgnoreCase("createMultiFile")) {
             benchmark.open();
-            benchmark.createMultiFile(filename, storageClass);
+            benchmark.createMultiFile(filename, storageClass, Mt);
             benchmark.close();
         } else if (type.equalsIgnoreCase("getKey")) {
             benchmark.open();
-            benchmark.getKey(filename, size, loop);
+            benchmark.getKey(filename, size, loop, Mt);
             benchmark.close();
         } else if (type.equals("getFile")) {
             benchmark.open();
@@ -1342,11 +1348,11 @@ public class CrailBenchmark {
             benchmark.close();
         } else if (type.equalsIgnoreCase("early")) {
             benchmark.open();
-            benchmark.early(filename);
+            benchmark.early(filename, Mt);
             benchmark.close();
         } else if (type.equalsIgnoreCase("writeInt")) {
             benchmark.open();
-            benchmark.writeInt(filename, loop);
+            benchmark.writeInt(filename, loop, Mt);
             benchmark.close();
         } else if (type.equalsIgnoreCase("readInt")) {
             benchmark.open();
@@ -1372,7 +1378,7 @@ public class CrailBenchmark {
             benchmark.locationMap();
         } else if (type.equalsIgnoreCase("testLocalDataWrite")) {
             benchmark.open();
-            benchmark.testLocalDataWrite(filename, storageClass, locationClass, useBuffered, skipDir);
+            benchmark.testLocalDataWrite(filename, storageClass, locationClass, useBuffered, skipDir, Mt);
             benchmark.close();
         } else {
             HelpFormatter formatter = new HelpFormatter();
