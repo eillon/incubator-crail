@@ -31,8 +31,8 @@ class SchedDataInfo {
 
         // 无需区分storageType，因为用的同一个模型
         // 在getNetworkConsumption中会区分网络
-        time = CrailUtils.getStorageConsumption(dataNodeInfo.getM(), dataNodeInfo.getW(), CrailConstants.BLOCK_SIZE)
-                + CrailUtils.getNetworkConsumption(dataNodeInfo.getH(), dataNodeInfo.getD(), CrailConstants.BLOCK_SIZE, CrailConstants.BLOCK_SIZE, dataNodeInfo.getNetType());
+        time = CrailUtils.getStorageConsumption(dataNodeInfo.getM(), dataNodeInfo.getW(), 1)
+                + CrailUtils.getNetworkConsumption(dataNodeInfo.getH(), dataNodeInfo.getD(), 1, 1, dataNodeInfo.getNetType());
         blockNum = dataNodeInfo.getBlockCount();  // 初始化时的BlockCount，之后不更新
         remainingBlockNum = dataNodeInfo.getBlockCount();
         key = dataNodeInfo.key();
@@ -51,6 +51,7 @@ class SchedDataInfo {
         this.remainingBlockNum = dataNodeInfo.getBlockCount();
         this.time = CrailUtils.getStorageConsumption(dataNodeInfo.getM(), dataNodeInfo.getW(), CrailConstants.BLOCK_SIZE)
                 + CrailUtils.getNetworkConsumption(dataNodeInfo.getH(), dataNodeInfo.getD(), CrailConstants.BLOCK_SIZE, CrailConstants.BLOCK_SIZE, dataNodeInfo.getNetType());
+        this.blockNum = Math.max(dataNodeInfo.getBlockCount(), this.blockNum);
     }
 
     public double getTime() {

@@ -279,9 +279,9 @@ public class CrailUtils {
 
 	/**
 	 * 计算存储耗时。适用于DRAM和NVM
-	 * @param M 硬件的最大传输速率，暂时由配置文件指定
+	 * @param M 硬件的最大传输速率，暂时由配置文件指定 MB/s
 	 * @param w 影响因子，只与硬件有关。由配置文件指定
-	 * @param size 文件大小
+	 * @param size 文件大小 M
 	 * @return
 	 */
 	public static double getStorageConsumption(double M, double w, double size){
