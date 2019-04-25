@@ -55,9 +55,9 @@ public class TcpRpcConnection implements RpcConnection {
 	}
 
 	public RpcFuture<RpcCreateFile> createFile(FileName fileName,
-			CrailNodeType type, int storageAffinity, int locationAffinity, boolean enumerable)
+			CrailNodeType type, int storageAffinity, int locationAffinity, double Mt, boolean enumerable)
 			throws IOException {
-		RpcRequestMessage.CreateFileReq req = new RpcRequestMessage.CreateFileReq(fileName, type, storageAffinity, locationAffinity, enumerable);
+		RpcRequestMessage.CreateFileReq req = new RpcRequestMessage.CreateFileReq(fileName, type, storageAffinity, locationAffinity, Mt, enumerable);
 		RpcResponseMessage.CreateFileRes resp = new RpcResponseMessage.CreateFileRes();
 
 		TcpNameNodeRequest request = new TcpNameNodeRequest(req);

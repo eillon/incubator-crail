@@ -59,12 +59,12 @@ public class DaRPCNameNodeConnection implements RpcConnection {
 	}	
 	
 	@Override
-	public RpcFuture<RpcCreateFile> createFile(FileName filename, CrailNodeType type, int storageClass, int locationClass, boolean enumerable) throws IOException {
+	public RpcFuture<RpcCreateFile> createFile(FileName filename, CrailNodeType type, int storageClass, int locationClass, double Mt, boolean enumerable) throws IOException {
 		if (CrailConstants.DEBUG){
 			LOG.debug("RPC: createFile, fileType " + type + ", storageClass " + storageClass + ", locationClass " + locationClass);
 		}
 		
-		RpcRequestMessage.CreateFileReq createFileReq = new RpcRequestMessage.CreateFileReq(filename, type, storageClass, locationClass, enumerable);
+		RpcRequestMessage.CreateFileReq createFileReq = new RpcRequestMessage.CreateFileReq(filename, type, storageClass, locationClass, Mt, enumerable);
 		DaRPCNameNodeRequest request = new DaRPCNameNodeRequest(createFileReq);
 		request.setCommand(RpcProtocol.CMD_CREATE_FILE);
 		

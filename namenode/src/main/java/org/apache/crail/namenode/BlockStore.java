@@ -49,7 +49,7 @@ public class BlockStore {
         for (int i = 0; i < CrailConstants.STORAGE_CLASSES; i++) {
             this.storageClasses[i] = new StorageClass(i);
         }
-        scheduler = new MinHeapScheduler();
+        scheduler = new DPScheduler();
     }
 
     public short addBlock(NameNodeBlockInfo blockInfo) throws UnknownHostException {
