@@ -55,8 +55,9 @@ public class BlockStore {
     public short addBlock(NameNodeBlockInfo blockInfo) throws UnknownHostException {
         int storageClass = blockInfo.getDnInfo().getStorageClass();
         LOG.debug("BlockStore: addBlock {} to storageClass {}", blockInfo, storageClass);
+        short err = storageClasses[storageClass].addBlock(blockInfo);
         scheduler.update(getDataNode(blockInfo.getDnInfo()));
-        return storageClasses[storageClass].addBlock(blockInfo);
+        return err;
     }
 
     public boolean regionExists(BlockInfo region) {
@@ -66,8 +67,9 @@ public class BlockStore {
 
     public short updateRegion(BlockInfo region) {
         int storageClass = region.getDnInfo().getStorageClass();
+        short err = storageClasses[storageClass].updateRegion(region);
         scheduler.update(getDataNode(region.getDnInfo()));
-        return storageClasses[storageClass].updateRegion(region);
+        return err;
     }
 
     // -- 严重怀疑，locationClass的值传不到这里：不能为负
@@ -83,6 +85,7 @@ public class BlockStore {
         }
 
         if (storageClass == 0 && locationAffinity == 0) {
+            LOG.debug("DPScheduler begin");
             SchedDataInfo schedDataInfo = scheduler.getResult(Mt);
 
             if (schedDataInfo != null) {
