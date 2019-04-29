@@ -26,6 +26,9 @@ import org.slf4j.Logger;
 public class CrailConstants {
     private static final Logger LOG = CrailUtils.getLogger();
 
+    public static final String CRAIL_SCHEDULER_KEY = "crail.scheduler";
+    public static String CRAIL_SCHEDULER = "";
+
     public static final String STORAGE_DRAM_MAX_IO_RATE_KEY = "crail.storage.dram.maxiorate";
     public static double STORAGE_DRAM_MAX_IO_RATE = 1700;
 
@@ -266,8 +269,12 @@ public class CrailConstants {
         if (conf.get(NETWORK_RDMA_DELAY_KEY) != null) {
             NETWORK_RDMA_DELAY = Double.parseDouble(conf.get(NETWORK_RDMA_DELAY_KEY));
         }
-        if (conf.get(NETWORK_TYPE_KEY) != null){
+        if (conf.get(NETWORK_TYPE_KEY) != null) {
             NETWORK_TYPE = Integer.parseInt(conf.get(NETWORK_TYPE_KEY));
+        }
+
+        if (conf.get(CRAIL_SCHEDULER_KEY) != null) {
+            CRAIL_SCHEDULER = conf.get(CRAIL_SCHEDULER_KEY);
         }
     }
 
@@ -311,6 +318,8 @@ public class CrailConstants {
         LOG.info(NETWORK_RDMA_BANDWIDTH_KEY + " " + NETWORK_RDMA_BANDWIDTH);
         LOG.info(NETWORK_RDMA_DELAY_KEY + " " + NETWORK_RDMA_DELAY);
         LOG.info(NETWORK_TYPE_KEY + " " + NETWORK_TYPE);
+
+        LOG.info(CRAIL_SCHEDULER_KEY + " " + CRAIL_SCHEDULER);
     }
 
     public static void verify() throws IOException {

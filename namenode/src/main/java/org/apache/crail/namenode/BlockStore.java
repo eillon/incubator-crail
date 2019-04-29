@@ -49,14 +49,20 @@ public class BlockStore {
         for (int i = 0; i < CrailConstants.STORAGE_CLASSES; i++) {
             this.storageClasses[i] = new StorageClass(i);
         }
-        scheduler = new DPScheduler();
+        if (CrailConstants.CRAIL_SCHEDULER == "DPScheduler") {
+            scheduler = new DPScheduler();
+        } else {
+            scheduler = null;
+        }
     }
 
     public short addBlock(NameNodeBlockInfo blockInfo) throws UnknownHostException {
         int storageClass = blockInfo.getDnInfo().getStorageClass();
         LOG.debug("BlockStore: addBlock {} to storageClass {}", blockInfo, storageClass);
         short err = storageClasses[storageClass].addBlock(blockInfo);
-        scheduler.update(getDataNode(blockInfo.getDnInfo()));
+        if (CrailConstants.CRAIL_SCHEDULER == "DPScheduler") {
+            scheduler.update(getDataNode(blockInfo.getDnInfo()));
+        }
         return err;
     }
 
@@ -68,7 +74,9 @@ public class BlockStore {
     public short updateRegion(BlockInfo region) {
         int storageClass = region.getDnInfo().getStorageClass();
         short err = storageClasses[storageClass].updateRegion(region);
-        scheduler.update(getDataNode(region.getDnInfo()));
+        if (CrailConstants.CRAIL_SCHEDULER == "DPScheduler") {
+            scheduler.update(getDataNode(region.getDnInfo()));
+        }
         return err;
     }
 
@@ -84,7 +92,7 @@ public class BlockStore {
             }
         }
 
-        if (storageClass == 0 && locationAffinity == 0) {
+        if (CrailConstants.CRAIL_SCHEDULER == "DPScheduler" && storageClass == 0 && locationAffinity == 0) {
             LOG.debug("DPScheduler begin");
             SchedDataInfo schedDataInfo = scheduler.getResult(Mt);
 
@@ -105,7 +113,7 @@ public class BlockStore {
             }
         }
 
-        if (block != null){
+        if (block != null) {
             scheduler.update(getDataNode(block.getDnInfo()));
         }
 
