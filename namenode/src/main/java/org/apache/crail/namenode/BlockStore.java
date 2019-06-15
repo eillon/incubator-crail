@@ -113,7 +113,7 @@ public class BlockStore {
             }
         }
 
-        if (block != null) {
+        if (CrailConstants.CRAIL_SCHEDULER == "DPScheduler" && block != null) {
             scheduler.update(getDataNode(block.getDnInfo()));
         }
 
